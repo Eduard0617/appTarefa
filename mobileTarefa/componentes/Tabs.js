@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from '../componentes/Home';
-import Perfil from '../componentes/Perfil';
+import Home from './Home';
+import Perfil from './Perfil';
+import CriarTarefa from './CriarTarefa';
 import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -16,6 +17,8 @@ export default function Tabs() {
             iconName = 'home-outline';
           } else if (route.name === 'Perfil') {
             iconName = 'person-outline';
+          } else if (route.name === 'Tarefas') {
+            iconName = 'add-outline';
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -24,6 +27,7 @@ export default function Tabs() {
       })}
     >
       <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Tab.Screen name="Tarefas" component={CriarTarefa} options={{ headerShown: false }} />
       <Tab.Screen name="Perfil" component={Perfil} options={{ headerShown: false }} />
     </Tab.Navigator>
   );

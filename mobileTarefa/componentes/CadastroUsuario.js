@@ -1,22 +1,41 @@
-import React from "react";
-import { Text, View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {React, useState} from "react";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Button } from "react-native";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
+import { auth } from './Firebase';
 
-export default function Home({ navigation }) {
+export default function CadastroUsuario({ navigation }) {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+
+    const handleRegister = async () => {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+    
+          Alert.alert('Sucesso! 🎉', 'Usuário cadastrado com sucesso!', [
+            { text: 'OK', onPress: () => navigation.replace('Home') }
+          ]);
+        } catch (err) {
+          Alert.alert('Erro', 'Não foi possível cadastrar. Tente novamente.');
+        }
+      };
+
     return (
         <View style={styles.tela}>
             <View style={styles.container}>
                 <Text style={styles.titulo}>
                     Informe seus dados:
                 </Text>
-                <TextInput style={styles.input} placeholder="nome" />
+                <TextInput style={styles.input} placeholder="nome" value={name} onChangeText={setName}/>
 
-                <TextInput style={styles.input} placeholder="Email" />
+                <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail}/>
 
-                <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} />
+                <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} value={password} onChangeText={setPassword}/>
 
-                <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('Tabs')}>
-                    <Text style={styles.textoBotao}>Cadastrar</Text>
-                </TouchableOpacity>
+                <Button style={styles.botao} title="Cadastrar" onPress={handleRegister} />
 
             </View>
         </View>

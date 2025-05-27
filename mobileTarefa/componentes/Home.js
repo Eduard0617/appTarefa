@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
 export default function Home () {
     return (
@@ -14,7 +14,8 @@ export default function Home () {
 const styles = StyleSheet.create({
     tela: {
         flex: 1,
-        backgroundColor: '#F0EBC9'
+        backgroundColor: '#F0EBC9',
+        padding: 20
     },
 
     titulo: {

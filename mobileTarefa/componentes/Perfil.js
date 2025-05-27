@@ -5,7 +5,7 @@ export default function Perfil () {
     return (
     <View style={styles.tela}>
         <Text style={styles.alinha}>
-            hfgjhjfvfhjgfdsgfskfghjlrkjdfbla
+            
         </Text>
     </View>
     )
@@ -13,5 +13,8 @@ export default function Perfil () {
 
 const styles = StyleSheet.create({
     tela: {
+        flex: 1,
+        backgroundColor: '#F0EBC9',
+        padding: 20
     },
 })
