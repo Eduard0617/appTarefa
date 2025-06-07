@@ -21,9 +21,21 @@ const RegistroScreen = ({ navigation }) => {
         bio
       });
 
-      Alert.alert('Sucesso! 🎉', 'Usuário cadastrado com sucesso!', [
-        { text: 'OK', onPress: () => navigation.replace('Home') }
-      ]);
+      Alert.alert(
+        'Sucesso! 🎉', 
+        'Usuário cadastrado com sucesso!',
+        [
+          { 
+            text: 'OK', 
+            onPress: () => {
+              // Fazer logout do usuário recém-criado
+              auth.signOut();
+              // Navegar para a tela de login
+              navigation.replace('Login');
+            }
+          }
+        ]
+      );
     } catch (err) {
       Alert.alert('Erro', 'Não foi possível cadastrar. Tente novamente.');
     }
@@ -89,8 +101,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 5,
-    width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 10
   },
 
   textoBotao: {

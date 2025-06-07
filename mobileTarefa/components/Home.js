@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { fetchTarefas, fetchToggleStatus } from './Api';
+import { fetchTarefas, fetchToggleStatus, deleteTarefa } from './Api';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -11,9 +11,17 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const tarefasData = await fetchTarefas();
+      try{
+        const tarefasData = await fetchTarefas();
       setTarefas(tarefasData.tarefas || []);
-      setLoading(false);
+      }
+      catch(error){
+        setTarefas([]);
+        console.error('Erro ao buscar tarefas:', error);  
+      }
+      finally{
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -31,9 +39,9 @@ const HomeScreen = () => {
     };
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity onPress={() => navigation.navigate('ExibirTarefa', { tarefa: item })} style={styles.card}>
         <Text style={styles.title}>{item.titulo}</Text>
-        <Text>{item.descricao}</Text>
+        <Text>{item.descricao.length > 100 ? item.descricao.substring(0, 100) + '...' : item.descricao}</Text>
         <Text style={[styles.badge, item.concluido ? styles.concluido : styles.pendente]}>
           {item.concluido ? 'Concluído' : 'Pendente'}
         </Text>
@@ -49,19 +57,19 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.editButton]}
-            onPress={() => navigation.navigate('EditarTarefa', { id: item.id })}
+            onPress={() => navigation.navigate('EditarTarefa', { tarefa: item })}
           >
             <Text style={styles.buttonText}>Editar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.deleteButton]}
-            onPress={() => console.log('Excluir', item.id)}
+            onPress={() => navigation.navigate('ExcluirTarefa', { tarefa: item })}
           >
             <Text style={styles.buttonText}>Excluir</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity >
     );
   };
 

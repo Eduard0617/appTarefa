@@ -7,6 +7,9 @@ import RegistroScreen from './components/Registro';
 import PerfilScreen from './components/Perfil';
 import SplashScreen from './components/SplashScreen';
 import RegistroTarefaScreen from './components/RegistroTarefa';
+import ExcluirTarefaScreen from './components/ExcluirTarefa';
+import EditarTarefaScreen from './components/EditarTarefa';
+import ExibirTarefaScreen from './components/ExibirTarefa';
 import Tabs from './components/Tabs';
 
 const Stack = createStackNavigator();
@@ -22,6 +25,39 @@ export default function App() {
         <Stack.Screen name="Perfil" component={PerfilScreen} />
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false}} />
+        <Stack.Screen 
+          name="ExcluirTarefa" 
+          component={ExcluirTarefaScreen}
+          options={{
+            title: 'Excluir Tarefa',
+            headerStyle: {
+              backgroundColor: '#0042BF',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <Stack.Screen 
+          name="EditarTarefa" 
+          component={EditarTarefaScreen}
+          options={{
+            title: 'Editar Tarefa',
+            headerStyle: {
+              backgroundColor: '#0042BF',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <Stack.Screen 
+          name="ExibirTarefa" 
+          component={ExibirTarefaScreen}
+          options={{
+            title: 'Detalhes da Tarefa',
+            headerStyle: {
+              backgroundColor: '#0042BF',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

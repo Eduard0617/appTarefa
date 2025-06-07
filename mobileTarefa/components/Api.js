@@ -1,4 +1,4 @@
-const API_URL = 'http://10.0.2.2:8000/api/tarefas';
+const API_URL = 'https://webapptech.site/apitarefas/api/tarefas';
 import { Alert } from 'react-native';
 import { auth } from './Firebase';
 
@@ -11,19 +11,35 @@ const getUid = () => {
 export const fetchTarefas = async () => {
   try {
     const userId = await getUid();
+    console.log('Tentando buscar tarefas para o usuário:', userId);
+    
     const response = await fetch(API_URL, {
+      method: 'GET',
       headers: {
-        method: 'POST',
+        'Content-Type': 'application/json',
         'X-User-Id': userId,
       },
     });
 
-    if (!response.ok) throw new Error('Erro ao buscar tarefas');
+    console.log('Status da resposta:', response.status);
+    console.log('Headers da resposta:', response.headers);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Resposta de erro:', errorText);
+      throw new Error(`Erro ao buscar tarefas: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log('Dados recebidos:', data);
     return data;
   } catch (error) {
-    console.error('Erro ao buscar tarefas:', error.message);
-    Alert.alert('Erro', `Não foi possível buscar as tarefas: ${error.message}`);
+    console.error('Erro completo:', error);
+    Alert.alert(
+      'Erro na API',
+      `Detalhes do erro:\n${error.message}\n\nVerifique sua conexão com a internet e tente novamente.`
+    );
+    return { tarefas: [] };
   }
 };
 
@@ -70,37 +86,50 @@ export const createTarefa = async (tarefaData) => {
   }
 };
 
-export const deleteTarefa = async (tarefaId, setTarefas) => {
+export const fetchTarefa = async (tarefaId) => {
   try {
     const userId = await getUid();
+
+    const response = await fetch(`${API_URL}/${tarefaId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': userId,
+      }
+    });
+
+    console.log('Status da resposta:', response.status);
+
+    const responseData = await response.json();
+    console.log('Resposta da exibição:', responseData);
+    return responseData;
+  } catch (error) {
+    console.error('Erro ao exibir tarefa:', error);
+    throw new Error(`Falha ao exibir tarefa: ${error.message}`);
+  }
+};
+
+export const deleteTarefa = async (tarefaId) => {
+  try {
+    const userId = await getUid();
+    console.log('Tentando excluir tarefa:', tarefaId, 'do usuário:', userId);
+
     const response = await fetch(`${API_URL}/${tarefaId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         'X-User-Id': userId,
-      },
-      body: JSON.stringify({ userId }),
+      }
     });
 
-    const textResponse = await response.text();
-    let responseData;
+    console.log('Status da resposta:', response.status);
 
-    try {
-      responseData = JSON.parse(textResponse);
-    } catch {
-      console.warn('Resposta não é um JSON válido.');
-      responseData = null;
-    }
-
-    if (response.ok && responseData?.success) {
-      Alert.alert('Sucesso!', responseData.message);
-      setTarefas((prev) => prev.filter((t) => t.id !== tarefaId));
-    } else {
-      throw new Error(responseData?.message || 'Erro ao excluir a tarefa');
-    }
+    const responseData = await response.json();
+    console.log('Resposta da exclusão:', responseData);
+    return responseData;
   } catch (error) {
-    console.error('Erro ao excluir tarefa:', error.message);
-    Alert.alert('Erro ao excluir', `Detalhes: ${error.message}`);
+    console.error('Erro ao excluir tarefa:', error);
+    throw new Error(`Falha ao excluir tarefa: ${error.message}`);
   }
 };
 
