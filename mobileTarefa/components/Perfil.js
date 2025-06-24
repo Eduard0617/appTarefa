@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TextInput, Button, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TextInput, Button, Alert, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { auth } from './Firebase';
 import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -52,34 +52,36 @@ const PerfilScreen = () => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 1,
-        base64: true,
+        base64: false,
       });
 
       if (!result.canceled) {
-        const base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
-        // Dados para o Cloudinary
-        const data = {
-          file: base64Img,
-          upload_preset: 'preset_publico',
-          cloud_name: 'dyrjnu8aj',
-        };
+        const imageUri = result.assets[0].uri;
+        const formData = new FormData();
+        formData.append('file', {
+          uri: imageUri,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        });
+        formData.append('upload_preset', 'preset_publico');
+        formData.append('cloud_name', 'dyrjnu8aj');
 
         const res = await fetch('https://api.cloudinary.com/v1_1/dyrjnu8aj/image/upload', {
           method: 'POST',
-          body: JSON.stringify(data),
+          body: formData,
           headers: {
-            'content-type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         });
 
         const json = await res.json();
+        console.log('URL da imagem Cloudinary:', json.secure_url);
 
         if (json.secure_url) {
           const user = auth.currentUser;
           await updateDoc(doc(db, 'users', user.uid), {
             photoURL: json.secure_url,
           });
-          // Atualiza os dados do usuário localmente
           setUserData(prev => ({ ...prev, photoURL: json.secure_url }));
           Alert.alert('Sucesso', 'Foto de perfil atualizada!');
         } else {
@@ -102,6 +104,8 @@ const PerfilScreen = () => {
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Perfil do Usuário</Text>
 
+            console.log('userData.photoURL:', userData.photoURL);
+
             {userData.photoURL ? (
               <Image
                 source={{ uri: userData.photoURL }}
@@ -114,10 +118,11 @@ const PerfilScreen = () => {
             )}
           </View>
 
-          <Button title="Editar Foto de Perfil" onPress={pickImageAndUpload} />
-
           {isEditing ? (
             <>
+              <TouchableOpacity style={styles.botao} onPress={pickImageAndUpload}>
+                <Text style={styles.textoBotao}>Editar Foto de Perfil</Text>
+              </TouchableOpacity>
               <TextInput
                 style={styles.input}
                 value={name}
@@ -130,8 +135,12 @@ const PerfilScreen = () => {
                 onChangeText={setBio}
                 placeholder="Bio"
               />
-              <Button title="Salvar" onPress={handleSave} />
-              <Button title="Cancelar" onPress={() => setIsEditing(false)} color="#888" />
+              <TouchableOpacity style={styles.salvarBotao} onPress={handleSave}>
+                <Text style={styles.textoBotao}>Salvar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelarBotao} onPress={() => setIsEditing(false)}>
+                <Text style={styles.textoBotao}>Cancelar</Text>
+              </TouchableOpacity>
             </>
           ) : (
             <>
@@ -142,7 +151,9 @@ const PerfilScreen = () => {
               
               <Text>Bio:</Text>
               <Text style={styles.info}>{userData.bio}</Text>
-              <Button title="Editar" onPress={() => setIsEditing(true)} />
+              <TouchableOpacity style={styles.editarBotao} onPress={() => setIsEditing(true)}>
+                <Text style={styles.textoBotao}>Editar</Text>
+              </TouchableOpacity>
             </>
           )}
         </>
@@ -192,9 +203,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     marginBottom: 10,
   },
   imgPerfil: {
@@ -215,7 +226,51 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     width: '100%',
     marginVertical: 8
-  }
+  },
+  botao: {
+    marginTop: 20,
+    backgroundColor: '#0042BF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    alignItems: 'center',
+  },
+  editarBotao: {
+    marginTop: 20,
+    backgroundColor: '#8FBC8F',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    alignItems: 'center',
+  },
+  salvarBotao: {
+    marginTop: 20,
+    backgroundColor: '#8FBC8F',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    alignItems: 'center',
+  },
+  cancelarBotao: {
+    marginTop: 20,
+    backgroundColor: '#f44336',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    alignItems: 'center',
+  },
+  textoBotao: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 export default PerfilScreen;

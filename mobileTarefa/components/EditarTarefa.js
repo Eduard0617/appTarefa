@@ -102,7 +102,7 @@ const EditarTarefaScreen = () => {
         )}
 
         <TouchableOpacity 
-          style={styles.botaoAtualizar}
+          style={styles.botao}
           onPress={handleUpdate}
           disabled={loading}
         >
@@ -185,12 +185,15 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16
   },
-  botaoAtualizar: {
-    backgroundColor: '#0042BF',
-    padding: 15,
+  botao: {
+    marginTop: 20,
+    backgroundColor: '#0442BF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
     alignItems: 'center',
-    marginBottom: 10
   },
   botaoCancelar: {
     backgroundColor: '#fff',
@@ -202,8 +205,7 @@ const styles = StyleSheet.create({
   },
   textoBotao: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   textoBotaoCancelar: {
     color: '#0042BF',
